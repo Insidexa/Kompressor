@@ -103,6 +103,54 @@ function generateTable(count) {
 
 function generateTableKoefStep2(data) {
 
+    let html = '';
+
+    console.log(data);
+
+    for (let i = 0; i < data.length; i++) {
+
+        html += `<div class="row">
+<h5 class="text-center">Значение коэффициентов для ${i + 1} ступени</h5>
+                            <div class="col-md-6">
+                                <p>Для уравнения &eta; = f(Ф<sub>0</sub>)</p>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td>a</td>
+                                        <td>${data[i].koefsRashoda.a}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>b</td>
+                                        <td>${data[i].koefsRashoda.b}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>c</td>
+                                        <td>${data[i].koefsRashoda.c}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <p>Для уравнения &Psi; = f(Ф<sub>0</sub>)</p>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td>a</td>
+                                        <td>${data[i].koefsPolytropNapora.a}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>b</td>
+                                        <td>${data[i].koefsPolytropNapora.b}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>c</td>
+                                        <td>${data[i].koefsPolytropNapora.c}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>`;
+
+    }
+
+    $('.result-koefs').html(html);
+
 }
 
 /**
@@ -282,17 +330,10 @@ $('.calculate-app').on('click', function () {
         // коэф. политропного напора Ψ0
         let aY = createDMatrixKramer(state.stypensData[i].koefRashoda, state.stypensData[i].koefNapora);
 
-        state.stypensData[i].koefsN = aF.result;
-        state.stypensData[i].koefsY = aY.result;
+        state.stypensData[i].koefsRashoda = aF.result;
+        state.stypensData[i].koefsPolytropNapora = aY.result;
     }
 
     generateTableKoefStep2(state.stypensData);
 
 });
-
-
-/*let m = createDMatrixKramer([0.05, 0.07, 0.095], [0.78, 0.81, 0.65]);
-
-let Dk = calculateDk(m, 0.05);
-
-console.log(m);*/
