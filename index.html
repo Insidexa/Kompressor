@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nasos</title>
+
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div>
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">Исходные данные</a></li>
+                    <li role="presentation"><a href="#step2" aria-controls="step2" role="tab" data-toggle="tab">Шаг 2</a></li>
+                    <li role="presentation"><a href="#step3" aria-controls="step3" role="tab" data-toggle="tab">Шаг 3</a></li>
+                    <li role="presentation"><a href="#step4" aria-controls="step4" role="tab" data-toggle="tab">Шаг 4</a></li>
+                    <li role="presentation"><a href="#step5" aria-controls="step5" role="tab" data-toggle="tab">Шаг 5</a></li>
+                    <li role="presentation"><a href="#step6" aria-controls="step6" role="tab" data-toggle="tab">Шаг 6</a></li>
+                    <li role="presentation"><a href="#step7" aria-controls="step7" role="tab" data-toggle="tab">Шаг 7</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+
+                    <!-- Исходные данные -->
+                    <div role="tabpanel" class="tab-pane active" id="data">
+
+                        <h2>1.1 Свойства газа и параметры потока</h2>
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Наименование параметра</th>
+                                    <th>Обозначение</th>
+                                    <th>Единица<br>измерения</th>
+                                    <th>Значение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Газовая постоянная</td>
+                                <td>R</td>
+                                <td>Дж/кг K</td>
+                                <td>
+                                    <input type="number" class="data-gaz" value="287">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Показатель адиабаты</td>
+                                <td>k</td>
+                                <td>-</td>
+                                <td>
+                                    <input type="number" step="0.01" class="data-diabat" value="1.4">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Давление газа на входе</td>
+                                <td>Рн</td>
+                                <td>МПа</td>
+                                <td>
+                                    <input type="number" step="0.01" value="0.1" class="data-gaz-enter">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Температура газа на входе</td>
+                                <td>Тн</td>
+                                <td>К</td>
+                                <td>
+                                    <input type="number" value="294" class="data-temperature-gaz-enter">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <h2>1.2 Геометрические и режимные параметры</h2>
+
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Наименование параметра</th>
+                                <th>Обозначение</th>
+                                <th>Единица<br>измерения</th>
+                                <th>Значение</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Диаметр рабочего колеса</td>
+                                <td>D <sub>2</sub> </td>
+                                <td>м</td>
+                                <td>
+                                    <input type="number" step="0.01" class="data-diametr-work-kolesa" value="0.5">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Угловая скорость вращения ротора</td>
+                                <td>w</td>
+                                <td>p/c</td>
+                                <td>
+                                    <input type="number" class="data-angular-speed-rotor" value="800">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Усл. коеф. расхода 1-й ступени на ном. режиме</td>
+                                <td>Ф <sub>ном</sub> </td>
+                                <td>-</td>
+                                <td>
+                                    <input type="number" step="0.01" value="0.07" class="data-koef_first_stype_nominal">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <h2>1.3 Газодинамические параметры ступеней</h2>
+
+                        <div class="row">
+                            <span>Выберите количество ступеней для исследуемого компрессора </span>
+                            <select class="data-count_stype">
+                                <option selected value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+
+                        <div class="stypens">
+
+                        </div>
+
+                    </div>
+
+
+                    <div role="tabpanel" class="tab-pane" id="step2">...</div>
+                    <div role="tabpanel" class="tab-pane" id="step3">...</div>
+                    <div role="tabpanel" class="tab-pane" id="step4">...</div>
+                    <div role="tabpanel" class="tab-pane" id="step5">...</div>
+                    <div role="tabpanel" class="tab-pane" id="step6">...</div>
+                    <div role="tabpanel" class="tab-pane" id="step7">...</div>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+                <button class="btn btn-primary btn-block calculate-app">Начать расчет</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="node_modules/mathjs/dist/math.min.js"></script>
+<script src="src/application.js"></script>
+
+</body>
+</html>
