@@ -32,6 +32,7 @@ let state = {
 };
 
 /**
+ * Генерация таблицы с вводом данных о ступени
  *
  * @param count
  */
@@ -101,11 +102,13 @@ function generateTable(count) {
 
 }
 
+/**
+ * генерация значений коэффициентов
+ *
+ * @param data
+ */
 function generateTableKoefStep2(data) {
-
     let html = '';
-
-    console.log(data);
 
     for (let i = 0; i < data.length; i++) {
 
@@ -172,12 +175,6 @@ function calculateMatrix(matrix, matrixCompare) {
 
     let det = math.det(matrix);
 
-    /*let a = (matrix[1][1] * matrix[2][2]) - (matrix[1][2] * matrix[2][1]);
-
-    let b = (matrix[0][1] * matrix[2][2]) - (matrix[0][2] * matrix[2][1]);
-
-    let c = (matrix[0][1] * matrix[1][2]) - (matrix[0][2] * matrix[1][1]);*/
-
     let det1 = matrixCompare[0] * matrix[1][1] * matrix[2][2]
         + matrixCompare[1]      * matrix[2][1] * matrix[0][2]
         + matrix[0][1]          * matrix[1][2] * matrixCompare[2]
@@ -200,22 +197,10 @@ function calculateMatrix(matrix, matrixCompare) {
         - matrix[0][0]      * matrix[2][1]      * matrixCompare[1];
 
     return {
-        a: det1 / det,
-        b: det2 / det,
-        c: det3 / det,
+        a: math.eval(`${det1} / ${det}`),
+        b: math.eval(`${det2} / ${det}`),
+        c: math.eval(`${det3} / ${det}`),
     };
-
-    /*return {
-        determs: [
-            det,
-            det1 / det,
-            det2 / det,
-            det3 / det
-        ],
-        a: a,
-        b: b,
-        c: c
-    };*/
 }
 
 /**
@@ -256,17 +241,7 @@ function createDMatrixKramer(Fi0, matrixCompare) {
 }
 
 /**
- * Расчет Dk
- *
- * @param data
- * @param Fi0
- * @return {number}
- */
-function calculateDk(data, Fi0) {
-    return ( data.result.a ) - ( Fi0 * data.result.b ) + ( Math.pow(Fi0, 2) * data.result.c );
-}
-
-/**
+ * Генерация ступеней с входный данных
  *
  * @return {Array}
  */
@@ -298,6 +273,9 @@ function getStypensData() {
 
 }
 
+/**
+ * Инициализация входных данных & построение структуры ступеней
+ */
 function initData() {
     state.gaz = parseFloat($('.data-gaz').val());
     state.diabat = parseFloat($('.data-diabat').val());
@@ -311,17 +289,10 @@ function initData() {
     state.stypensData = getStypensData();
 }
 
-generateTable( parseInt( state.countStypen ) );
-
-$('.data-count_stype').on('change', function () {
-    let count = parseInt( this.value );
-    state.countStypen = count;
-    generateTable( count );
-});
-
-$('.calculate-app').on('click', function () {
-    initData();
-
+/**
+ * Определение коэффициентов уравнений
+ */
+function step2() {
     for (let i = 0; i < state.stypensData.length; i++) {
 
         // коэф. расхода Ф0
@@ -335,5 +306,56 @@ $('.calculate-app').on('click', function () {
     }
 
     generateTableKoefStep2(state.stypensData);
+}
 
-});
+/**
+ * Расчет  производительности  комрессора на входе
+ */
+function step3() {
+    let U2 = math.eval(`(${state.angularSpeedRotor} * ${state.diametrWorkKolesa}) / 2`);
+
+    let html = `<table class="table table-bordered">
+<tr>
+    <td>№ режима</td>
+    <td>Объем. производ.</td>
+</tr>`;
+
+    for (let i = 0; i < 5; i++) {
+        let a = math.eval('0.25 * ' + (i + 1) + ' + 0.25');
+        let F0i = math.eval(a + ' * ' + state.koefFirstStypeNominal);
+
+        let Vn = ( math.PI * math.pow(state.diametrWorkKolesa, 2) * U2 * F0i ) / 4;
+
+        html += `<tr>
+    <td>${i + 1}</td>
+    <td>${Vn.toFixed(2)}</td>
+</tr>
+                `;
+    }
+
+    html += '</table>';
+
+    $('.result-koef-rashoda').html(html);
+
+}
+
+function application() {
+    generateTable( parseInt( state.countStypen ) );
+
+    $('.data-count_stype').on('change', function () {
+        let count = parseInt( this.value );
+        state.countStypen = count;
+        generateTable( count );
+    });
+
+    $('.calculate-app').on('click', function () {
+        initData();
+
+        step2();
+
+        step3();
+
+    });
+}
+
+application();
