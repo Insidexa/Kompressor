@@ -28,7 +28,11 @@ let state = {
     koefFirstStypeNominal: 0,
 
     // ступени
-    stypensData: []
+    stypensData: [],
+
+    Foi: [],
+
+    U2: null
 };
 
 /**
@@ -314,6 +318,8 @@ function step2() {
 function step3() {
     let U2 = math.eval(`(${state.angularSpeedRotor} * ${state.diametrWorkKolesa}) / 2`);
 
+    state.U2 = U2;
+
     let html = `<table class="table table-bordered">
 <tr>
     <td>№ режима</td>
@@ -324,18 +330,69 @@ function step3() {
         let a = math.eval('0.25 * ' + (i + 1) + ' + 0.25');
         let F0i = math.eval(a + ' * ' + state.koefFirstStypeNominal);
 
+        state.Foi.push(F0i);
+
         let Vn = ( math.PI * math.pow(state.diametrWorkKolesa, 2) * U2 * F0i ) / 4;
 
         html += `<tr>
-    <td>${i + 1}</td>
-    <td>${Vn.toFixed(2)}</td>
-</tr>
-                `;
+                    <td>${i + 1}</td>
+                    <td>${Vn.toFixed(2)}</td>
+                </tr>`;
     }
 
     html += '</table>';
 
     $('.result-koef-rashoda').html(html);
+
+}
+
+function step4() {
+
+    let firstStypen = state.stypensData[0];
+
+    let html = `<table class="table table-bordered">
+                <tr>
+                    <td>№ режима</td>
+                    <td>П</td>
+                    <td>&Psi;<sub>ni</sub></td>
+                    <td>&eta;<sub>ni</sub></td>
+                    <td>&oacute;<sub>i</sub></td>
+                    <td>E</td>
+                </tr>`;
+
+    for (let i = 0; i < 5; i++) {
+
+        let Yni = firstStypen.koefsPolytropNapora.a + firstStypen.koefsPolytropNapora.b * state.Foi[i] + firstStypen.koefsPolytropNapora.c * math.pow(state.Foi[i], 2);
+
+        let Nni = firstStypen.koefsRashoda.a + firstStypen.koefsRashoda.b * state.Foi[i] + firstStypen.koefsRashoda.c * math.pow(state.Foi[i], 2);
+
+        let O = ( state.diabat / (state.diabat - 1) ) * Nni;
+
+        let P = math.pow(
+            ( 1 + Yni * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
+            O
+        );
+
+        let Ni = O / (O - 1);
+
+        let Ei = math.pow( P, 1 / Ni );
+
+        html += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${P}</td>
+                <td>${Yni}</td>
+                <td>${Nni}</td>
+                <td>${O}</td>
+                <td>${Ei}</td>
+            </tr>
+        `;
+
+    }
+
+    html += '</table>';
+
+    $('.result-relation').html(html);
 
 }
 
@@ -354,6 +411,8 @@ function application() {
         step2();
 
         step3();
+
+        step4();
 
     });
 }
