@@ -32,7 +32,11 @@ let state = {
 
     Foi: [],
 
-    U2: null
+    U2: 0,
+
+    Yri: [],
+
+    Nni: []
 };
 
 /**
@@ -123,15 +127,15 @@ function generateTableKoefStep2(data) {
                                 <table class="table table-bordered">
                                     <tr>
                                         <td>a</td>
-                                        <td>${data[i].koefsRashoda.a}</td>
+                                        <td>${data[i].koefsRashoda.a.toFixed(3)}</td>
                                     </tr>
                                     <tr>
                                         <td>b</td>
-                                        <td>${data[i].koefsRashoda.b}</td>
+                                        <td>${data[i].koefsRashoda.b.toFixed(3)}</td>
                                     </tr>
                                     <tr>
                                         <td>c</td>
-                                        <td>${data[i].koefsRashoda.c}</td>
+                                        <td>${data[i].koefsRashoda.c.toFixed(3)}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -140,15 +144,15 @@ function generateTableKoefStep2(data) {
                                 <table class="table table-bordered">
                                     <tr>
                                         <td>a</td>
-                                        <td>${data[i].koefsPolytropNapora.a}</td>
+                                        <td>${data[i].koefsPolytropNapora.a.toFixed(3)}</td>
                                     </tr>
                                     <tr>
                                         <td>b</td>
-                                        <td>${data[i].koefsPolytropNapora.b}</td>
+                                        <td>${data[i].koefsPolytropNapora.b.toFixed(3)}</td>
                                     </tr>
                                     <tr>
                                         <td>c</td>
-                                        <td>${data[i].koefsPolytropNapora.c}</td>
+                                        <td>${data[i].koefsPolytropNapora.c.toFixed(3)}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -346,6 +350,9 @@ function step3() {
 
 }
 
+/**
+ * Расчет отношений давлений первой ступени
+ */
 function step4() {
 
     let firstStypen = state.stypensData[0];
@@ -362,16 +369,22 @@ function step4() {
 
     for (let i = 0; i < 5; i++) {
 
-        let Yni = firstStypen.koefsPolytropNapora.a + firstStypen.koefsPolytropNapora.b * state.Foi[i] + firstStypen.koefsPolytropNapora.c * math.pow(state.Foi[i], 2);
+        let Yri = firstStypen.koefsPolytropNapora.a + firstStypen.koefsPolytropNapora.b * state.Foi[i] + firstStypen.koefsPolytropNapora.c * math.pow(state.Foi[i], 2);
+
+        state.Yri.push(Yri);
 
         let Nni = firstStypen.koefsRashoda.a + firstStypen.koefsRashoda.b * state.Foi[i] + firstStypen.koefsRashoda.c * math.pow(state.Foi[i], 2);
+
+        state.Nni.push(Nni);
 
         let O = ( state.diabat / (state.diabat - 1) ) * Nni;
 
         let P = math.pow(
-            ( 1 + Yni * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
+            ( 1 + Yri * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
             O
         );
+
+        console.log(Yri);
 
         let Ni = O / (O - 1);
 
@@ -380,11 +393,11 @@ function step4() {
         html += `
             <tr>
                 <td>${i + 1}</td>
-                <td>${P}</td>
-                <td>${Yni}</td>
-                <td>${Nni}</td>
-                <td>${O}</td>
-                <td>${Ei}</td>
+                <td>${P.toFixed(3)}</td>
+                <td>${Yri.toFixed(3)}</td>
+                <td>${Nni.toFixed(3)}</td>
+                <td>${O.toFixed(3)}</td>
+                <td>${Ei.toFixed(3)}</td>
             </tr>
         `;
 
@@ -393,6 +406,17 @@ function step4() {
     html += '</table>';
 
     $('.result-relation').html(html);
+
+}
+
+function step5() {
+
+    let sumYn = state.stypensData[0].koefNapora.reduce((a, b) => a + b, 0);
+    let sumYr = state.Yri.reduce((a, b) => a + b, 0);
+
+    for (let i = 0; i < 5; i++) {
+        let Nk = sumYr / (sumYn / state.Nni[i]);
+    }
 
 }
 
@@ -413,6 +437,8 @@ function application() {
         step3();
 
         step4();
+
+        step5();
 
     });
 }

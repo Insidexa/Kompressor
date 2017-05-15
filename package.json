@@ -1,4 +1,14 @@
 {
+  "name": "Kompressor",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "author": "Andrey Jakovenko",
+  "devDependencies": {
+    "electron": "^1.6.7",
+    "electron-builder": "^17.5.0",
+    "electron-packager": "^8.7.0"
+  },
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
