@@ -1,6 +1,6 @@
 /**
  *
- * @type {{countStypen: number, gaz: number, diabat: number, gazEnter: number, temperateGazEnter: number, diametrWorkKolesa: number, angularSpeedRotor: number, koefFirstStypeNominal: number, stypensData: Array}}
+ * @type {{countStypen: number, gaz: number, diabat: number, gazEnter: number, temperateGazEnter: number, diametrWorkKolesa: number, angularSpeedRotor: number, koefFirstStypeNominal: number, stypensData: Array, Foi: Array, U2: number, Yri: Array, Nni: Array, Vn: Array}}
  */
 let state = {
     countStypen: 1,
@@ -36,7 +36,9 @@ let state = {
 
     Yri: [],
 
-    Nni: []
+    Nni: [],
+
+    Vn: []
 };
 
 /**
@@ -47,7 +49,7 @@ let state = {
 function generateTable(count) {
     let html = '';
 
-    for(let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
         html += `<h3>${i + 1} ступень</h3>
     <table class="table table-bordered">
                             <thead>
@@ -175,34 +177,34 @@ function generateTableKoefStep2(data) {
  */
 function calculateMatrix(matrix, matrixCompare) {
     /*let det = matrix[0][0] * matrix[1][1] * matrix[2][2]
-        + matrix[1][0] * matrix[2][1] * matrix[0][2]
-        + matrix[0][1] * matrix[1][2] * matrix[2][0]
-        - matrix[0][2] * matrix[1][1] * matrix[2][0]
-        - matrix[1][0] * matrix[0][1] * matrix[2][2]
-        - matrix[0][0] * matrix[2][1] * matrix[1][2];*/
+     + matrix[1][0] * matrix[2][1] * matrix[0][2]
+     + matrix[0][1] * matrix[1][2] * matrix[2][0]
+     - matrix[0][2] * matrix[1][1] * matrix[2][0]
+     - matrix[1][0] * matrix[0][1] * matrix[2][2]
+     - matrix[0][0] * matrix[2][1] * matrix[1][2];*/
 
     let det = math.det(matrix);
 
     let det1 = matrixCompare[0] * matrix[1][1] * matrix[2][2]
-        + matrixCompare[1]      * matrix[2][1] * matrix[0][2]
-        + matrix[0][1]          * matrix[1][2] * matrixCompare[2]
-        - matrix[0][2]          * matrix[1][1] * matrixCompare[2]
-        - matrixCompare[1]      * matrix[0][1] * matrix[2][2]
-        - matrixCompare[0]      * matrix[2][1] * matrix[1][2];
+        + matrixCompare[1] * matrix[2][1] * matrix[0][2]
+        + matrix[0][1] * matrix[1][2] * matrixCompare[2]
+        - matrix[0][2] * matrix[1][1] * matrixCompare[2]
+        - matrixCompare[1] * matrix[0][1] * matrix[2][2]
+        - matrixCompare[0] * matrix[2][1] * matrix[1][2];
 
-    let det2 = matrix[0][0]     * matrixCompare[1]  * matrix[2][2]
-        + matrix[1][0]          * matrixCompare[2]  * matrix[0][2]
-        + matrixCompare[0]      * matrix[1][2]      * matrix[2][0]
-        - matrix[0][2]          * matrixCompare[1]  * matrix[2][0]
-        - matrix[1][0]          * matrixCompare[0]  * matrix[2][2]
-        - matrix[0][0]          * matrixCompare[2]  * matrix[1][2];
+    let det2 = matrix[0][0] * matrixCompare[1] * matrix[2][2]
+        + matrix[1][0] * matrixCompare[2] * matrix[0][2]
+        + matrixCompare[0] * matrix[1][2] * matrix[2][0]
+        - matrix[0][2] * matrixCompare[1] * matrix[2][0]
+        - matrix[1][0] * matrixCompare[0] * matrix[2][2]
+        - matrix[0][0] * matrixCompare[2] * matrix[1][2];
 
-    let det3 = matrix[0][0] * matrix[1][1]      * matrixCompare[2]
-        + matrix[1][0]      * matrix[2][1]      * matrixCompare[0]
-        + matrix[0][1]      * matrixCompare[1]  * matrix[2][0]
-        - matrixCompare[0]  * matrix[1][1]      * matrix[2][0]
-        - matrix[1][0]      * matrix[0][1]      * matrixCompare[2]
-        - matrix[0][0]      * matrix[2][1]      * matrixCompare[1];
+    let det3 = matrix[0][0] * matrix[1][1] * matrixCompare[2]
+        + matrix[1][0] * matrix[2][1] * matrixCompare[0]
+        + matrix[0][1] * matrixCompare[1] * matrix[2][0]
+        - matrixCompare[0] * matrix[1][1] * matrix[2][0]
+        - matrix[1][0] * matrix[0][1] * matrixCompare[2]
+        - matrix[0][0] * matrix[2][1] * matrixCompare[1];
 
     return {
         a: math.eval(`${det1} / ${det}`),
@@ -338,6 +340,8 @@ function step3() {
 
         let Vn = ( math.PI * math.pow(state.diametrWorkKolesa, 2) * U2 * F0i ) / 4;
 
+        state.Vn.push(Vn.toFixed(2));
+
         html += `<tr>
                     <td>${i + 1}</td>
                     <td>${Vn.toFixed(2)}</td>
@@ -355,9 +359,11 @@ function step3() {
  */
 function step4() {
 
-    let firstStypen = state.stypensData[0];
+    let html = '';
 
-    let html = `<table class="table table-bordered">
+    for (let k = 0; k < state.stypensData.length; k++) {
+
+        html += `<table class="table table-bordered">
                 <tr>
                     <td>№ режима</td>
                     <td>П</td>
@@ -367,43 +373,53 @@ function step4() {
                     <td>E</td>
                 </tr>`;
 
-    for (let i = 0; i < 5; i++) {
+        state.stypensData[k].dataP = [];
+        state.stypensData[k].dataY = [];
+        state.stypensData[k].dataN = [];
 
-        let Yri = firstStypen.koefsPolytropNapora.a + firstStypen.koefsPolytropNapora.b * state.Foi[i] + firstStypen.koefsPolytropNapora.c * math.pow(state.Foi[i], 2);
+        for (let i = 0; i < 5; i++) {
 
-        state.Yri.push(Yri);
+            let Yri = state.stypensData[k].koefsPolytropNapora.a
+                + state.stypensData[k].koefsPolytropNapora.b
+                * state.Foi[i]
+                + state.stypensData[k].koefsPolytropNapora.c
+                * math.pow(state.Foi[i], 2);
 
-        let Nni = firstStypen.koefsRashoda.a + firstStypen.koefsRashoda.b * state.Foi[i] + firstStypen.koefsRashoda.c * math.pow(state.Foi[i], 2);
+            let Nni = state.stypensData[k].koefsRashoda.a
+                + state.stypensData[k].koefsRashoda.b
+                * state.Foi[i]
+                + state.stypensData[k].koefsRashoda.c
+                * math.pow(state.Foi[i], 2);
 
-        state.Nni.push(Nni);
+            let O = ( state.diabat / (state.diabat - 1) ) * Nni;
 
-        let O = ( state.diabat / (state.diabat - 1) ) * Nni;
+            let P = math.pow(
+                ( 1 + Yri * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
+                O
+            );
 
-        let P = math.pow(
-            ( 1 + Yri * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
-            O
-        );
+            let Ni = O / (O - 1);
 
-        console.log(Yri);
+            let Ei = math.pow(P, 1 / Ni);
 
-        let Ni = O / (O - 1);
+            state.stypensData[k].dataP.push(P);
+            state.stypensData[k].dataY.push(Yri);
+            state.stypensData[k].dataN.push(Nni);
 
-        let Ei = math.pow( P, 1 / Ni );
-
-        html += `
-            <tr>
+            html += `<tr>
                 <td>${i + 1}</td>
                 <td>${P.toFixed(3)}</td>
                 <td>${Yri.toFixed(3)}</td>
                 <td>${Nni.toFixed(3)}</td>
                 <td>${O.toFixed(3)}</td>
                 <td>${Ei.toFixed(3)}</td>
-            </tr>
-        `;
+            </tr>`;
+
+        }
+
+        html += '</table>';
 
     }
-
-    html += '</table>';
 
     $('.result-relation').html(html);
 
@@ -411,22 +427,172 @@ function step4() {
 
 function step5() {
 
-    let sumYn = state.stypensData[0].koefNapora.reduce((a, b) => a + b, 0);
-    let sumYr = state.Yri.reduce((a, b) => a + b, 0);
+    let P = [];
+    let N = [];
+
+    let relationStypen = `<table class="table">
+        <tr>
+            <td>№ режима</td><td>П</td>
+        </tr>`;
+    let relationMode = `<table class="table">
+       <tr>
+        <td>№ режима</td><td>&eta;<sub>к</sub></td>
+        </tr>`;
 
     for (let i = 0; i < 5; i++) {
-        let Nk = sumYr / (sumYn / state.Nni[i]);
+
+        let currentP = 1;
+
+        let currentYSum = 0;
+        let currentDelitel = 0;
+
+        for (let k = 0; k < state.stypensData.length; k++) {
+            currentP *= state.stypensData[k].dataP[i];
+        }
+
+        for (let k = 0; k < state.stypensData.length; k++) {
+            currentYSum += state.stypensData[k].dataY[i];
+            currentDelitel += state.stypensData[k].dataY[i] / state.stypensData[k].dataN[i];
+        }
+
+        P.push(currentP.toFixed(2));
+        N.push((currentYSum / currentDelitel).toFixed(2));
+
+        relationStypen += `<tr><td>${i + 1}</td><td>${currentP.toFixed(2)}</td></tr>`;
+        relationMode += `<tr><td>${i + 1}</td><td>${(currentYSum / currentDelitel).toFixed(2)}</td></tr>`;
+
+    }
+
+    relationStypen += `</table>`;
+    relationMode += `</table>`;
+
+    document.getElementById('relation-stypen').innerHTML = relationStypen;
+    document.getElementById('kpd-relation-mode').innerHTML = relationMode;
+
+    step6({
+        N: N,
+        P: P
+    });
+
+}
+
+/**
+ * графики
+ */
+function step6(data) {
+
+    c3.generate({
+        bindto: '#kpd',
+        data: {
+            xs: {
+                'data1': 'x1',
+                'data2': 'x2'
+            },
+            columns: [
+                ['x1'].concat(state.Vn),
+                ['x2'].concat(state.Vn),
+                ['data1'].concat(data.P),
+                ['data2'].concat(state.stypensData[0].dataN),
+            ],
+            type: 'spline'
+        },
+        zoom: {
+            enabled: true
+        },
+        axis: {
+            x: {
+                max: 5,
+                label: {
+                    text: 'V',
+                    position: 'outer-center'
+                },
+            },
+            y: {
+                max: 5,
+                label: {
+                    text: 'n, П',
+                    position: 'outer-middle'
+                },
+            }
+        },
+        grid: {
+            x: {
+                show: true
+            },
+            y: {
+                show: true
+            }
+        }
+    });
+
+    let graphics = document.getElementById('graphics');
+    graphics.innerHTML = '';
+
+    for (let i = 0; i < state.stypensData.length; i++) {
+
+        let nameGraph = 'graph' + i;
+        let graph = document.createElement('div');
+        graph.setAttribute('id', nameGraph);
+
+        let name = document.createElement('h3');
+        name.innerText = `Для ${i + 1} ступени`;
+
+        graphics.appendChild(name);
+        graphics.appendChild(graph);
+
+        c3.generate({
+            bindto: '#' + nameGraph,
+            data: {
+                xs: {
+                    'Y': 'x1',
+                    'N': 'x2'
+                },
+                columns: [
+                    ['x1'].concat(state.stypensData[i].koefRashoda),
+                    ['x2'].concat(state.stypensData[i].koefRashoda),
+                    ['Y'].concat(state.stypensData[i].polytronKdp),
+                    ['N'].concat(state.stypensData[i].koefNapora),
+                ],
+                type: 'spline'
+            },
+            zoom: {
+                enabled: true
+            },
+            axis: {
+                x: {
+                    label: {
+                        text: 'Ф0',
+                        position: 'outer-center'
+                    }
+                },
+                y: {
+                    max: 1,
+                    label: {
+                        text: 'n, Y',
+                        position: 'outer-middle'
+                    }
+                }
+            },
+            grid: {
+                x: {
+                    show: true
+                },
+                y: {
+                    show: true
+                }
+            }
+        });
     }
 
 }
 
 function application() {
-    generateTable( parseInt( state.countStypen ) );
+    generateTable(parseInt(state.countStypen));
 
     $('.data-count_stype').on('change', function () {
-        let count = parseInt( this.value );
+        let count = parseInt(this.value);
         state.countStypen = count;
-        generateTable( count );
+        generateTable(count);
     });
 
     $('.calculate-app').on('click', function () {
