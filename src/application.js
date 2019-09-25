@@ -1,34 +1,30 @@
-/**
- *
- * @type {{countStypen: number, gaz: number, diabat: number, gazEnter: number, temperateGazEnter: number, diametrWorkKolesa: number, angularSpeedRotor: number, koefFirstStypeNominal: number, stypensData: Array, Foi: Array, U2: number, Yri: Array, Nni: Array, Vn: Array}}
- */
-let state = {
-    countStypen: 1,
+const state = {
+    countStage: 1,
 
     // Газовая постоянная
     gaz: 0,
 
     // Показатель адиабаты
-    diabat: 0,
+    adiabats: 0,
 
     // Давление газа на входе
-    gazEnter: 0,
+    pressureGazOnEnter: 0,
 
     // Температура газа на входе
-    temperateGazEnter: 0,
+    temperateGazOnEnter: 0,
 
 
     // Диаметр рабочего колеса
-    diametrWorkKolesa: 0,
+    diameterWorkWheels: 0,
 
     // Угловая скорость вращения ротора
-    angularSpeedRotor: 0,
+    angularRotationSpeedRotor: 0,
 
     // Усл. коеф. расхода 1-й ступени на ном. режиме
-    koefFirstStypeNominal: 0,
+    coefficientFirstStageNominal: 0,
 
     // ступени
-    stypensData: [],
+    stagesData: [],
 
     Foi: [],
 
@@ -117,7 +113,7 @@ function generateTable(count) {
  *
  * @param data
  */
-function generateTableKoefStep2(data) {
+function generateTableCoefficientStep2(data) {
     let html = '';
 
     for (let i = 0; i < data.length; i++) {
@@ -176,30 +172,23 @@ function generateTableKoefStep2(data) {
  * @return {{a: number, b: number, c: number}}
  */
 function calculateMatrix(matrix, matrixCompare) {
-    /*let det = matrix[0][0] * matrix[1][1] * matrix[2][2]
-     + matrix[1][0] * matrix[2][1] * matrix[0][2]
-     + matrix[0][1] * matrix[1][2] * matrix[2][0]
-     - matrix[0][2] * matrix[1][1] * matrix[2][0]
-     - matrix[1][0] * matrix[0][1] * matrix[2][2]
-     - matrix[0][0] * matrix[2][1] * matrix[1][2];*/
+    const det = math.det(matrix);
 
-    let det = math.det(matrix);
-
-    let det1 = matrixCompare[0] * matrix[1][1] * matrix[2][2]
+    const det1 = matrixCompare[0] * matrix[1][1] * matrix[2][2]
         + matrixCompare[1] * matrix[2][1] * matrix[0][2]
         + matrix[0][1] * matrix[1][2] * matrixCompare[2]
         - matrix[0][2] * matrix[1][1] * matrixCompare[2]
         - matrixCompare[1] * matrix[0][1] * matrix[2][2]
         - matrixCompare[0] * matrix[2][1] * matrix[1][2];
 
-    let det2 = matrix[0][0] * matrixCompare[1] * matrix[2][2]
+    const det2 = matrix[0][0] * matrixCompare[1] * matrix[2][2]
         + matrix[1][0] * matrixCompare[2] * matrix[0][2]
         + matrixCompare[0] * matrix[1][2] * matrix[2][0]
         - matrix[0][2] * matrixCompare[1] * matrix[2][0]
         - matrix[1][0] * matrixCompare[0] * matrix[2][2]
         - matrix[0][0] * matrixCompare[2] * matrix[1][2];
 
-    let det3 = matrix[0][0] * matrix[1][1] * matrixCompare[2]
+    const det3 = matrix[0][0] * matrix[1][1] * matrixCompare[2]
         + matrix[1][0] * matrix[2][1] * matrixCompare[0]
         + matrix[0][1] * matrixCompare[1] * matrix[2][0]
         - matrixCompare[0] * matrix[1][1] * matrix[2][0]
@@ -222,13 +211,13 @@ function calculateMatrix(matrix, matrixCompare) {
  */
 function createDMatrixKramer(Fi0, matrixCompare) {
 
-    let Fi0Square = [
+    const Fi0Square = [
         Math.pow(Fi0[0], 2),
         Math.pow(Fi0[1], 2),
         Math.pow(Fi0[2], 2),
     ];
 
-    let matrix = [[], [], []];
+    const matrix = [[], [], []];
 
     matrix[0][0] = 1;
     matrix[1][0] = 1;
@@ -255,31 +244,31 @@ function createDMatrixKramer(Fi0, matrixCompare) {
  *
  * @return {Array}
  */
-function getStypensData() {
+function getStagesData() {
 
-    let stypens = [];
+    const stages = [];
 
-    for (let i = 0; i < state.countStypen; i++) {
+    for (let i = 0; i < state.countStage; i++) {
 
-        let stypen = {koefRashoda: [], polytronKdp: [], koefNapora: []};
+        let stage = {coefficientConsumption: [], polytropicKdp: [], coefficientPressure: []};
 
-        $(`.data-koef-rasxod-styp${i}`).each(function (index, item) {
-            stypen.koefRashoda.push(parseFloat($(item).val()));
+        $(`.data-koef-rasxod-styp${i}`).each((index, item) => {
+            stage.coefficientConsumption.push(parseFloat($(item).val()));
         });
 
-        $(`.data-polytron-kpd-kolesa-styp${i}`).each(function (index, item) {
-            stypen.polytronKdp.push(parseFloat($(item).val()));
+        $(`.data-polytron-kpd-kolesa-styp${i}`).each((index, item) => {
+            stage.polytropicKdp.push(parseFloat($(item).val()));
         });
 
-        $(`.data-koef-polytron-napora-styp${i}`).each(function (index, item) {
-            stypen.koefNapora.push(parseFloat($(item).val()));
+        $(`.data-koef-polytron-napora-styp${i}`).each((index, item) => {
+            stage.coefficientPressure.push(parseFloat($(item).val()));
         });
 
-        stypens.push(stypen);
+        stages.push(stage);
 
     }
 
-    return stypens;
+    return stages;
 
 }
 
@@ -288,41 +277,41 @@ function getStypensData() {
  */
 function initData() {
     state.gaz = parseFloat($('.data-gaz').val());
-    state.diabat = parseFloat($('.data-diabat').val());
-    state.gazEnter = parseFloat($('.data-gaz-enter').val());
-    state.temperateGazEnter = parseFloat($('.data-temperature-gaz-enter').val());
+    state.adiabats = parseFloat($('.data-diabat').val());
+    state.pressureGazOnEnter = parseFloat($('.data-gaz-enter').val());
+    state.temperateGazOnEnter = parseFloat($('.data-temperature-gaz-enter').val());
 
-    state.diametrWorkKolesa = parseFloat($('.data-diametr-work-kolesa').val());
-    state.angularSpeedRotor = parseFloat($('.data-angular-speed-rotor').val());
-    state.koefFirstStypeNominal = parseFloat($('.data-koef_first_stype_nominal').val());
+    state.diameterWorkWheels = parseFloat($('.data-diametr-work-kolesa').val());
+    state.angularRotationSpeedRotor = parseFloat($('.data-angular-speed-rotor').val());
+    state.coefficientFirstStageNominal = parseFloat($('.data-koef_first_stype_nominal').val());
 
-    state.stypensData = getStypensData();
+    state.stagesData = getStagesData();
 }
 
 /**
  * Определение коэффициентов уравнений
  */
-function step2() {
-    for (let i = 0; i < state.stypensData.length; i++) {
+function detectCoefficientEquations() {
+    for (let i = 0; i < state.stagesData.length; i++) {
 
         // коэф. расхода Ф0
-        let aF = createDMatrixKramer(state.stypensData[i].koefRashoda, state.stypensData[i].polytronKdp);
+        const aF = createDMatrixKramer(state.stagesData[i].coefficientConsumption, state.stagesData[i].polytropicKdp);
 
         // коэф. политропного напора Ψ0
-        let aY = createDMatrixKramer(state.stypensData[i].koefRashoda, state.stypensData[i].koefNapora);
+        const aY = createDMatrixKramer(state.stagesData[i].coefficientConsumption, state.stagesData[i].coefficientPressure);
 
-        state.stypensData[i].koefsRashoda = aF.result;
-        state.stypensData[i].koefsPolytropNapora = aY.result;
+        state.stagesData[i].koefsRashoda = aF.result;
+        state.stagesData[i].koefsPolytropNapora = aY.result;
     }
 
-    generateTableKoefStep2(state.stypensData);
+    generateTableCoefficientStep2(state.stagesData);
 }
 
 /**
  * Расчет  производительности  комрессора на входе
  */
-function step3() {
-    let U2 = math.eval(`(${state.angularSpeedRotor} * ${state.diametrWorkKolesa}) / 2`);
+function calcPerformanceCompressor() {
+    const U2 = math.eval(`(${state.angularRotationSpeedRotor} * ${state.diameterWorkWheels}) / 2`);
 
     state.U2 = U2;
 
@@ -334,11 +323,11 @@ function step3() {
 
     for (let i = 0; i < 5; i++) {
         let a = math.eval('0.25 * ' + (i + 1) + ' + 0.25');
-        let F0i = math.eval(a + ' * ' + state.koefFirstStypeNominal);
+        let F0i = math.eval(a + ' * ' + state.coefficientFirstStageNominal);
 
         state.Foi.push(F0i);
 
-        let Vn = ( math.PI * math.pow(state.diametrWorkKolesa, 2) * U2 * F0i ) / 4;
+        let Vn = ( math.PI * math.pow(state.diameterWorkWheels, 2) * U2 * F0i ) / 4;
 
         state.Vn.push(Vn.toFixed(2));
 
@@ -357,11 +346,11 @@ function step3() {
 /**
  * Расчет отношений давлений первой ступени
  */
-function step4() {
+function calcRelationPressureFirstStage() {
 
     let html = '';
 
-    for (let k = 0; k < state.stypensData.length; k++) {
+    for (let k = 0; k < state.stagesData.length; k++) {
 
         html += `<table class="table table-bordered">
                 <tr>
@@ -373,38 +362,38 @@ function step4() {
                     <td>E</td>
                 </tr>`;
 
-        state.stypensData[k].dataP = [];
-        state.stypensData[k].dataY = [];
-        state.stypensData[k].dataN = [];
+        state.stagesData[k].dataP = [];
+        state.stagesData[k].dataY = [];
+        state.stagesData[k].dataN = [];
 
         for (let i = 0; i < 5; i++) {
 
-            let Yri = state.stypensData[k].koefsPolytropNapora.a
-                + state.stypensData[k].koefsPolytropNapora.b
+            const Yri = state.stagesData[k].koefsPolytropNapora.a
+                + state.stagesData[k].koefsPolytropNapora.b
                 * state.Foi[i]
-                + state.stypensData[k].koefsPolytropNapora.c
+                + state.stagesData[k].koefsPolytropNapora.c
                 * math.pow(state.Foi[i], 2);
 
-            let Nni = state.stypensData[k].koefsRashoda.a
-                + state.stypensData[k].koefsRashoda.b
+            const Nni = state.stagesData[k].koefsRashoda.a
+                + state.stagesData[k].koefsRashoda.b
                 * state.Foi[i]
-                + state.stypensData[k].koefsRashoda.c
+                + state.stagesData[k].koefsRashoda.c
                 * math.pow(state.Foi[i], 2);
 
-            let O = ( state.diabat / (state.diabat - 1) ) * Nni;
+            const O = ( state.adiabats / (state.adiabats - 1) ) * Nni;
 
-            let P = math.pow(
-                ( 1 + Yri * math.pow(state.U2, 2) * ( (state.diabat - 1) / (state.diabat * state.gaz * state.temperateGazEnter * Nni ) ) ),
+            const P = math.pow(
+                ( 1 + Yri * math.pow(state.U2, 2) * ( (state.adiabats - 1) / (state.adiabats * state.gaz * state.temperateGazOnEnter * Nni ) ) ),
                 O
             );
 
-            let Ni = O / (O - 1);
+            const Ni = O / (O - 1);
 
-            let Ei = math.pow(P, 1 / Ni);
+            const Ei = math.pow(P, 1 / Ni);
 
-            state.stypensData[k].dataP.push(P);
-            state.stypensData[k].dataY.push(Yri);
-            state.stypensData[k].dataN.push(Nni);
+            state.stagesData[k].dataP.push(P);
+            state.stagesData[k].dataY.push(Yri);
+            state.stagesData[k].dataN.push(Nni);
 
             html += `<tr>
                 <td>${i + 1}</td>
@@ -427,10 +416,11 @@ function step4() {
 
 function step5() {
 
-    let P = [];
-    let N = [];
+    const P = [];
+    const N = [];
+    const { stagesData } = state;
 
-    let relationStypen = `<table class="table">
+    let relationStage = `<table class="table">
         <tr>
             <td>№ режима</td><td>П</td>
         </tr>`;
@@ -444,35 +434,29 @@ function step5() {
         let currentP = 1;
 
         let currentYSum = 0;
-        let currentDelitel = 0;
+        let currentDivider = 0;
 
-        for (let k = 0; k < state.stypensData.length; k++) {
-            currentP *= state.stypensData[k].dataP[i];
-        }
-
-        for (let k = 0; k < state.stypensData.length; k++) {
-            currentYSum += state.stypensData[k].dataY[i];
-            currentDelitel += state.stypensData[k].dataY[i] / state.stypensData[k].dataN[i];
+        for (let k = 0; k < stagesData.length; k++) {
+            currentP *= stagesData[k].dataP[i];
+            currentYSum += stagesData[k].dataY[i];
+            currentDivider += stagesData[k].dataY[i] / stagesData[k].dataN[i];
         }
 
         P.push(currentP.toFixed(2));
-        N.push((currentYSum / currentDelitel).toFixed(2));
+        N.push((currentYSum / currentDivider).toFixed(2));
 
-        relationStypen += `<tr><td>${i + 1}</td><td>${currentP.toFixed(2)}</td></tr>`;
-        relationMode += `<tr><td>${i + 1}</td><td>${(currentYSum / currentDelitel).toFixed(2)}</td></tr>`;
+        relationStage += `<tr><td>${i + 1}</td><td>${currentP.toFixed(2)}</td></tr>`;
+        relationMode += `<tr><td>${i + 1}</td><td>${(currentYSum / currentDivider).toFixed(2)}</td></tr>`;
 
     }
 
-    relationStypen += `</table>`;
+    relationStage += `</table>`;
     relationMode += `</table>`;
 
-    document.getElementById('relation-stypen').innerHTML = relationStypen;
+    document.getElementById('relation-stypen').innerHTML = relationStage;
     document.getElementById('kpd-relation-mode').innerHTML = relationMode;
 
-    step6({
-        N: N,
-        P: P
-    });
+    step6({ N, P });
 
 }
 
@@ -480,6 +464,10 @@ function step5() {
  * графики
  */
 function step6(data) {
+    const {
+        Vn,
+        stagesData,
+    } = state;
 
     c3.generate({
         bindto: '#kpd',
@@ -489,10 +477,10 @@ function step6(data) {
                 'data2': 'x2'
             },
             columns: [
-                ['x1'].concat(state.Vn),
-                ['x2'].concat(state.Vn),
+                ['x1'].concat(Vn),
+                ['x2'].concat(Vn),
                 ['data1'].concat(data.P),
-                ['data2'].concat(state.stypensData[0].dataN),
+                ['data2'].concat(stagesData[0].dataN),
             ],
             type: 'spline'
         },
@@ -525,16 +513,16 @@ function step6(data) {
         }
     });
 
-    let graphics = document.getElementById('graphics');
+    const graphics = document.getElementById('graphics');
     graphics.innerHTML = '';
 
-    for (let i = 0; i < state.stypensData.length; i++) {
+    for (let i = 0; i < stagesData.length; i++) {
 
-        let nameGraph = 'graph' + i;
-        let graph = document.createElement('div');
+        const nameGraph = 'graph' + i;
+        const graph = document.createElement('div');
         graph.setAttribute('id', nameGraph);
 
-        let name = document.createElement('h3');
+        const name = document.createElement('h3');
         name.innerText = `Для ${i + 1} ступени`;
 
         graphics.appendChild(name);
@@ -548,10 +536,10 @@ function step6(data) {
                     'N': 'x2'
                 },
                 columns: [
-                    ['x1'].concat(state.stypensData[i].koefRashoda),
-                    ['x2'].concat(state.stypensData[i].koefRashoda),
-                    ['Y'].concat(state.stypensData[i].polytronKdp),
-                    ['N'].concat(state.stypensData[i].koefNapora),
+                    ['x1'].concat(stagesData[i].coefficientConsumption),
+                    ['x2'].concat(stagesData[i].coefficientConsumption),
+                    ['Y'].concat(stagesData[i].polytropicKdp),
+                    ['N'].concat(stagesData[i].coefficientPressure),
                 ],
                 type: 'spline'
             },
@@ -587,22 +575,22 @@ function step6(data) {
 }
 
 function application() {
-    generateTable(parseInt(state.countStypen));
+    generateTable(parseInt(state.countStage));
 
-    $('.data-count_stype').on('change', function () {
-        let count = parseInt(this.value);
-        state.countStypen = count;
+    $('.data-count_stype').on('change', () => {
+        const count = parseInt(this.value);
+        state.countStage = count;
         generateTable(count);
     });
 
-    $('.calculate-app').on('click', function () {
+    $('.calculate-app').on('click', () => {
         initData();
 
-        step2();
+        detectCoefficientEquations();
 
-        step3();
+        calcPerformanceCompressor();
 
-        step4();
+        calcRelationPressureFirstStage();
 
         step5();
 
