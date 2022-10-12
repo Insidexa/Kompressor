@@ -6,8 +6,8 @@
   "author": "Andrey Jakovenko",
   "devDependencies": {
     "electron": "^1.6.7",
-    "electron-builder": "^17.5.0",
-    "electron-packager": "^8.7.0"
+    "electron-builder": "^23.6.0",
+    "electron-packager": "^16.0.0"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
